@@ -16,9 +16,21 @@ app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 
 app.get('/', (req, res) => {
-    res.send('hello world')
+    return Todo.findAll({
+        raw: true,
+        nest: true
+    })
+    .then(todos => res.render('index', { todos: todos }))
+    .catch(error => res.status(422).json(error))
 })
 
+
+app.get('/todos/:id', (req, res) => {
+    const id = req.params.id
+    return Todo.findByPk(id)
+        .then(todo => res.render('detail', {todo: todo.toJSON()}))
+        .catch(error => console.log(error))
+})
 
 app.get('/users/login', (req,res)=>{
     res.render('login')
